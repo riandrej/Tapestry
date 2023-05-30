@@ -17,6 +17,8 @@ import java.util.Objects;
 @NoArgsConstructor
 public class Employee {
     @Property
+    private Integer id;
+    @Property
     private String name;
     @Property
     private String lastName;

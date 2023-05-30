@@ -102,7 +102,14 @@ public class About {
     @OnEvent(component = "deleteEmployee")
     void deleteEmployee(int index) {
         employees.remove(index);
+        adjustEmployeeIds();
         employeeService.saveEmployees(employees);
+    }
+
+    private void adjustEmployeeIds() {
+        for (int i = 0; i < employees.size(); i++) {
+            employees.get(i).setId(i + 1);
+        }
     }
 
 
@@ -115,7 +122,7 @@ public class About {
             newEmployee.setPhotoFilePath("/images/" + fileName);
         }
 
-        employeeService.editEmployeeAttribute(employees, employees.indexOf(selectedEmployee), newEmployee, newEmployeeDateOfBirth);
+        employeeService.editEmployeeAttribute(employees, employees.indexOf(selectedEmployee), newEmployee, newEmployeeDateOfBirth,selectedEmployee);
 
         employeeService.saveEmployees(employees);
         newEmployee = new Employee();

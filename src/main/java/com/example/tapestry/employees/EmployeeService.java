@@ -14,17 +14,39 @@ public class EmployeeService {
 
     public void saveEmployees(List<Employee> employees) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(FILE_PATH))) {
+            writer.println("Id,Name,LastName,Title,Gender,DateOfBirth,PhotoFilePath");
 
-            writer.println("Name,LastName,Title,Gender,DateOfBirth,PhotoFilePath");
-
+            int maxId = 0;
 
             for (Employee employee : employees) {
-                writer.println(employee.getName() + ","
-                        + employee.getLastName() + ","
-                        + employee.getTitle() + ","
-                        + employee.getGender() + ","
-                        + employee.getDateOfBirth() + ","
-                        + employee.getPhotoFilePath());
+                Integer id = employee.getId();
+                if (id != null) {
+                    writer.println(id + ","
+                            + employee.getName() + ","
+                            + employee.getLastName() + ","
+                            + employee.getTitle() + ","
+                            + employee.getGender() + ","
+                            + employee.getDateOfBirth() + ","
+                            + employee.getPhotoFilePath());
+                    if (id > maxId) {
+                        maxId = id;
+                    }
+                }
+            }
+
+            int nextId = maxId + 1;
+
+            for (Employee employee : employees) {
+                if (employee.getId() == null) {
+                    employee.setId(nextId++);
+                    writer.println(employee.getId() + ","
+                            + employee.getName() + ","
+                            + employee.getLastName() + ","
+                            + employee.getTitle() + ","
+                            + employee.getGender() + ","
+                            + employee.getDateOfBirth() + ","
+                            + employee.getPhotoFilePath());
+                }
             }
 
             writer.flush();
@@ -32,6 +54,7 @@ public class EmployeeService {
             e.printStackTrace();
         }
     }
+
 
     public List<Employee> getEmployees() {
         List<Employee> employees = new ArrayList<>();
@@ -43,15 +66,17 @@ public class EmployeeService {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
-                if (data.length == 6) {
-                    String name = data[0].trim();
-                    String lastName = data[1].trim();
-                    Title title = Title.valueOf(data[2].trim());
-                    Gender gender = Gender.valueOf(data[3].trim());
-                    LocalDate dateOfBirth = LocalDate.parse(data[4]);
-                    String photoFilePath = data[5].trim();
+                if (data.length == 7) {
+                    Integer id = Integer.parseInt(data[0].trim());
+                    String name = data[1].trim();
+                    String lastName = data[2].trim();
+                    Title title = Title.valueOf(data[3].trim());
+                    Gender gender = Gender.valueOf(data[4].trim());
+                    LocalDate dateOfBirth = LocalDate.parse(data[5]);
+                    String photoFilePath = data[6].trim();
 
                     Employee employee = Employee.builder()
+                            .id(id)
                             .name(name)
                             .lastName(lastName)
                             .title(title)
@@ -70,47 +95,26 @@ public class EmployeeService {
         return employees;
     }
 
-    public void editEmployeeAttribute(List<Employee> employees, int index, Employee newEmployee, String updatedDate) {
-        Employee employee = employees.get(index);
-        String name = newEmployee.getName() != null ? newEmployee.getName() : employee.getName();
-        String lastName = newEmployee.getLastName() != null ? newEmployee.getLastName() : employee.getLastName();
-        Title title = newEmployee.getTitle() != null ? newEmployee.getTitle() : employee.getTitle();
-        Gender gender = newEmployee.getGender() != null ? newEmployee.getGender() : employee.getGender();
-        LocalDate dateOfBirth = updatedDate != null ? LocalDate.parse(updatedDate) : employee.getDateOfBirth();
-        String photoFilePath = newEmployee.getPhotoFilePath() != null ? newEmployee.getPhotoFilePath() : employee.getPhotoFilePath();
-
-        try {
-            Class<?> employeeClass = employee.getClass();
-
-            Field[] fields = employeeClass.getDeclaredFields();
-            for (Field field : fields) {
-                field.setAccessible(true);
-                String fieldName = field.getName();
-                switch (fieldName) {
-                    case "name":
-                        field.set(employee, name);
-                        break;
-                    case "lastName":
-                        field.set(employee, lastName);
-                        break;
-                    case "title":
-                        field.set(employee, title);
-                        break;
-                    case "gender":
-                        field.set(employee, gender);
-                        break;
-                    case "dateOfBirth":
-                        field.set(employee, dateOfBirth);
-                        break;
-                    case "photoFilePath":
-                        field.set(employee, photoFilePath);
-                        break;
+    public void editEmployeeAttribute(List<Employee> employees, int index, Employee newEmployee, String updatedDate, Employee selectedEmployee) {
+        Employee employee;
+        if (index == -1) {
+            employee = selectedEmployee;
+            for(Employee emp : employees) {
+                if(employee.getId().equals(emp.getId())) {
+                    employees.remove(emp);
+                    employees.add(employee);
                 }
             }
-        } catch (IllegalAccessException | DateTimeParseException e) {
-            e.printStackTrace();
+        } else {
+            employee = employees.get(index);
         }
 
+        employee.setName(newEmployee.getName() != null ? newEmployee.getName() : employee.getName());
+        employee.setLastName(newEmployee.getLastName() != null ? newEmployee.getLastName() : employee.getLastName());
+        employee.setTitle(newEmployee.getTitle() != null ? newEmployee.getTitle() : employee.getTitle());
+        employee.setGender(newEmployee.getGender() != null ? newEmployee.getGender() : employee.getGender());
+        employee.setDateOfBirth(updatedDate != null ? LocalDate.parse(updatedDate) : employee.getDateOfBirth());
+        employee.setPhotoFilePath(newEmployee.getPhotoFilePath() != null ? newEmployee.getPhotoFilePath() : employee.getPhotoFilePath());
 
         saveEmployees(employees);
     }
