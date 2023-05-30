@@ -1,0 +1,205 @@
+<html t:type="layout" title="About | tapestry"
+      xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+      xmlns:p="tapestry:parameter">
+
+<div class="row">
+    <div class="col-12">
+        <h1>List of employees</h1>
+    </div>
+</div>
+
+<t:block t:id="viewModal">
+    <img src="${selectedEmployee.photoFilePath}" alt="Photo of ${selectedEmployee.name} ${selectedEmployee.lastName} is not available" class="img-fluid" />
+</t:block>
+
+<t:block t:id="viewSpecific">
+<h4 class="modal-title">Photo - ${selectedEmployee.name} ${selectedEmployee.lastName}</h4>
+</t:block>
+
+<div class="row">
+    <div class="col-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Last Name</th>
+                    <th>Title</th>
+                    <th>Gender</th>
+                    <th>Date Of Birth</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <t:zone t:id="listOfEmployees" elementName="div">
+                    <t:loop source="employees" value="employee">
+                        <tr>
+                            <td>${employee.name}</td>
+                            <td>${employee.lastName}</td>
+                            <td>${employee.title}</td>
+                            <td>${employee.gender}</td>
+                            <td>${employee.dateOfBirth}</td>
+                            <td>
+                                <t:actionlink zone="formOfEmployee" t:id="editEmployee" context="${employees.indexOf(employee)}">
+                                    <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#editEmployeeModal">Edit</button>
+                                </t:actionlink>
+                                <t:actionlink zone="photoOfEmployee" t:id="viewEmployee" context="${employees.indexOf(employee)}">
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#viewEmployeeModal">View</button>
+                                </t:actionlink>
+                                <t:actionlink t:id="deleteEmployee" context="${employees.indexOf(employee)}" class="btn btn-danger">Delete</t:actionlink>
+
+                                <t:zone t:id="photoOfEmployee" elementName="div">
+                                    <div id="viewEmployeeModal" class="modal fade" tabindex="-1" role="dialog">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <t:zone t:id="viewSpecific"></t:zone>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <t:zone t:id="actualPhoto"></t:zone>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                </t:zone>
+                            </td>
+                        </tr>
+                    </t:loop>
+                </t:zone>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+
+<t:block t:id="updatedName">
+<t:form t:id="editForm" t:context="selectedEmployee">
+                    <div class="form-group">
+                        <t:label for="name">Name</t:label>
+                        <input t:type="TextField" t:id="editedName" class="form-control" t:value="newEmployee.name" t:placeholder="${selectedEmployee.name}" validate="maxLength=10, minLength=3"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input t:type="TextField" t:id="editedLastName" class="form-control" t:value="newEmployee.lastName" t:placeholder="${selectedEmployee.lastName}" validate="maxLength=10, minLength=3"/>
+                    </div>
+                        <div class="form-group">
+                            <label for="title">Title</label>
+                            <t:select t:value="newEmployee.title" class="form-control" validate="required">
+                                <option t:value="getIng()">ING</option>
+                                <option t:value="getMudr()">MUDR</option>
+                                <option t:value="getJudr()">JUDR</option>
+                                <option t:value="getBc()">BC</option>
+                                <option t:value="getWtf()">WTF</option>
+                            </t:select>
+                        </div>
+                        <div class="form-group">
+                        <label for="gender">Gender</label>
+                            <t:select t:value="newEmployee.gender" class="form-control" validate="required">
+                                <option t:value="getMale()">Male</option>
+                                <option t:value="getFemale()">Female</option>
+                                <option t:value="getHybrid()">Hybrid</option>
+                            </t:select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dateOfBirth">Date of Birth</label>
+                            <input t:type="TextField" t:id="editedDateOfBirth" class="form-control" t:value="newEmployeeDateOfBirth" t:format="YYYY-MM-DD" t:placeholder="${selectedEmployee.dateOfBirth}" validate="regexp=(\d{4}-\d{2}-\d{2})"/>
+                        </div>
+                        <input t:type="upload" t:id="editedPhotoFile" class="form-control" t:value="photoFile"/>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                     </t:form>
+</t:block>
+
+<!-- Edit Employee Modal -->
+<t:zone t:id="formOfEmployee" elementName="div">
+<div class="modal fade" id="editEmployeeModal" tabindex="-1" role="dialog" aria-labelledby="editEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editEmployeeModalLabel">Edit Employee</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            <t:zone t:id="updatedName"></t:zone>
+
+                     </div>
+                     </div>
+                     </div>
+                     </div>
+                      </t:zone>
+
+
+<t:zone t:id="afterAdd">
+<div class="row">
+    <div class="col-12">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEmployeeModal">Add Employee</button>
+    </div>
+</div>
+</t:zone>
+
+
+<!-- Add Employee Modal -->
+<div class="modal fade" id="addEmployeeModal" tabindex="-1" role="dialog" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addEmployeeModalLabel">Add Employee</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <t:form t:id="employeeForm" t:context="newEmployee">
+                    <div class="form-group">
+                        <t:label for="name">Name</t:label>
+                        <input t:type="TextField" t:id="name" class="form-control" t:value="newEmployee.name" validate="required, maxLength=10, minLength=3"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input t:type="TextField" t:id="lastName" class="form-control" t:value="newEmployee.lastName" validate="required, maxLength=10, minLength=3"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <t:select t:value="newEmployee.title" class="form-control" validate="required">
+                            <option t:value="getIng()">ING</option>
+                            <option t:value="getMudr()">MUDR</option>
+                            <option t:value="getJudr()">JUDR</option>
+                            <option t:value="getBc()">BC</option>
+                            <option t:value="getWtf()">WTF</option>
+                        </t:select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gender">Gender</label>
+                        <t:select t:value="newEmployee.gender" class="form-control" validate="required">
+                            <option t:value="getMale()">Male</option>
+                            <option t:value="getFemale()">Female</option>
+                            <option t:value="getHybrid()">Hybrid</option>
+                        </t:select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dateOfBirth">Date of Birth</label>
+                        <input t:type="TextField" t:id="dateOfBirth" class="form-control" t:value="newEmployeeDateOfBirth" t:format="YYYY-MM-DD" t:placeholder="YYYY-MM-DD" validate="required,regexp=(\d{4}-\d{2}-\d{2})"/>
+                    </div>
+
+                        <input t:type="upload" t:id="photoFile" class="form-control" t:value="photoFile"/>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Add</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </t:form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>

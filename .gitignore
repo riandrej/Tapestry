@@ -1,0 +1,6 @@
+.idea
+*.iml
+out
+lib
+target
+node_modules
